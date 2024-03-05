@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
-
-
-
-
+import prettytable as pt
+import numpy as np
 
 def u1_der1(x, u, u1):
     return -0.1 * u1 ** 2 - (1 + 0.1 * x) * u
@@ -60,20 +58,49 @@ def euler_method(x0, u0, u10, xn, h=0.2):
     return xs, ys
 
 
-# Define the function and its derivative
+def pikar_method_1(x):
+    return 1 + 2 * x - 0.7 * x ** 2 - x ** 3 / 60
 
 
-# Set initial guess, tolerance, and maximum iterations
-h = 0.2
+def taylor(x):
+    return 1 + 2 * x - 0.7 * x ** 2 - 1.54 / 6 * x ** 3 + 1.224 / 24 * x ** 4
 
-# Calculate function value using Newton's method
-xs, ys = euler_method(0, 1, 2, 10, 0.1)
 
-plt.plot(xs, ys[0],label = 'u0')
-print(xs)
-for i in range(5):
-    #plt.plot(xs,ys[i],label = f'u_der{i}')
-    print(ys[i])
 
+def pikar_method_2(x):
+    return 1 + (x ** 6) / (18000) - (
+                (x ** 6) / (12000) + (7 * x ** 5) / (1000) + (11 * x ** 4) / (75) - (14 * x ** 3) / (
+            15) + 2 * x ** 2) / (10) + (13 * x ** 5) / (3000) + (x ** 4) / (24) - (7 * x ** 3) / (20) - (
+                x ** 2) / 2 + 2 * x
+
+
+xs, ys = euler_method(0, 1, 2, 5, 0.01)
+ys_pikar_2 = [pikar_method_2(x) for x in xs]
+ys_pikar_1 = [pikar_method_1(x) for x in xs]
+ys_taylor = [taylor(x) for x in xs]
+plt.plot(xs, ys[0], label='u0 euler')
+plt.plot(xs, ys_pikar_2, label='u0 pikar_2')
+plt.plot(xs, ys_pikar_1, label='u0 pikar_1')
+plt.plot(xs, ys_taylor, label='u0 taylor')
+#print(f'{xs=}')
+#print(f'{ys_taylor=}')
+#for i in range(5):
+    # plt.plot(xs,ys[i],label = f'u_der{i}')
+    #print(ys[i])
+#rint(f'{ys_pikar_2=}')
+plt.grid()
 plt.legend()
 plt.show()
+
+table = pt.PrettyTable()
+table.add_column("x", np.round(xs, 3))
+table.add_column("Teylor", np.round(ys_taylor, 5))
+table.add_column("u Euler", np.round(ys[0], 5))
+table.add_column("u Pikar 1", np.round(ys_pikar_1, 5))
+table.add_column("u Pikar 2", np.round(ys_pikar_2, 5))
+table.add_column("u' Euler", np.round(ys[1], 5))
+table.add_column("u'' Euler", np.round(ys[2], 5))
+table.add_column("u''' Euler", np.round(ys[3], 5))
+table.add_column("u'''' Euler", np.round(ys[4], 5))
+
+print(table)
