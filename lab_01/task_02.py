@@ -1,5 +1,7 @@
 from matplotlib import pyplot as plt
 import math as m
+import numpy as np
+import prettytable as pt
 
 INF = 1e8
 
@@ -28,43 +30,41 @@ def get_graphs(f1, f2, x0, xn, h):
 
 
 def pikar_solve_first(u):
-    return 0.5 + (u ** 4 / 4 + u ** 2 / 2 - (1 / 2) ** 6 - (1 / 2) ** 3)
+    return 0.5 + u ** 4 / 4 + u ** 2 / 2
 
 
 def pikar_solve_sec(u):
-    return 0.5 + 2 * (u ** 6 / 24 + u ** 4 / 8 - 9 * u ** 2 / 128) + u ** 4 / 4 - int_pik_sec(0.5)
+    return 0.5 + 2 * ((u ** 6) / (24) + (u ** 4) / 8) + (u ** 4) / 4 + u ** 2 / 2
 
 
 def pikar_solve_third(u):
-    return 0.5 + int_pik_third(u) - int_pik_third(0.5)
-
-
-def int_pik_third(u):
-    return 2 * (u ** 8 / 96 + u ** 6 / 12 - 9 * u ** 4 / 256) + u ** 4 / 4
-
-
-def int_pik_sec(x):
-    return 2 * (x ** 6 / 24 + x ** 4 / 8 - 9 * x ** 2 / 128) + x ** 4 / 4
+    return 0.5 + 2 * ((u ** 8) / (96) + (u ** 6) / (12) + (u ** 4) / 8 + (u ** 2) / 4) + (u ** 4) / 4
 
 
 def default_solve(u):
-    return m.exp(u ** 2) - (u ** 2) / 2 - 1 / 2
+    return np.exp(u ** 2) - (u ** 2) / 2 - 1 / 2
 
 
-print(int_pik_sec(0.5))
-ys, xs_pik, xs_def = get_graphs(pikar_solve_first, default_solve, 0, 1, 0.02)
+ys, xs_pik, xs_def = get_graphs(pikar_solve_first, default_solve, 0, 1, 0.01)
 xs_pik_sec = [pikar_solve_sec(ys[i]) for i in range(len(ys))]
 xs_pik_third = [pikar_solve_third(ys[i]) for i in range(len(ys))]
-print(f'{ys=}')
-print(f'{xs_pik=}')
-print(f'{xs_pik_sec=}')
-print(f'{xs_pik_third=}')
-print(f'{xs_def=}')
+#print(f'{ys=}')
+#print(f'{xs_pik=}')
+#print(f'{xs_pik_sec=}')
+#print(f'{xs_pik_third=}')
+#print(f'{xs_def=}')
+table = pt.PrettyTable()
+table.add_column("y", np.round(ys, 3))
+table.add_column("analytic x", np.round(xs_def, 5))
+table.add_column("Pikar x 1", np.round(xs_pik, 5))
+table.add_column("Pikar x 2", np.round(xs_pik_sec, 5))
+table.add_column("Pikar x 3", np.round(xs_pik_third, 5))
+print(table)
 
-# plt.yscale('log')
-plt.plot(ys, xs_def, label='true')
-plt.plot(ys, xs_pik, label='pik ans')
-plt.plot(ys, xs_pik_sec, label='pik ans sec')
-plt.plot(ys, xs_pik_third, label='pik ans third')
+plt.plot(xs_def, ys, label='analytic x')
+plt.plot(xs_pik, ys, label='Pikar x 1')
+plt.plot(xs_pik_sec, ys, label='Pikar x 2')
+plt.plot(xs_pik_third, ys, label='Pikar x 3')
 plt.legend()
+plt.grid()
 plt.show()
