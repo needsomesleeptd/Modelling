@@ -3,7 +3,6 @@ import math as m
 import numpy as np
 import prettytable as pt
 
-INF = 1e8
 
 
 def get_k1(x, u):
